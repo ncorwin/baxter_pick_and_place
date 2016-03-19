@@ -8,7 +8,6 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   tf
   baxter_interface
-  urdf_parser
   pykdl_utils
 )
 
