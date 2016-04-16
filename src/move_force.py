@@ -46,7 +46,7 @@ class Trajectory(object):
 
         self._Favg = np.mean(self._Farray)
     
-    def execute_move(self, pos):
+    def execute_move(self, pos, raw=False):
         #rospy.loginfo('moving')
         # Read in pose data
         q = [pos.orientation.w, pos.orientation.x, pos.orientation.y, pos.orientation.z]
@@ -113,7 +113,7 @@ class Trajectory(object):
 #                nothing = True;
 #            else:
             limb_interface.set_joint_position_speed(.3)
-            limb_interface.set_joint_positions(angles)
+            limb_interface.set_joint_positions(angles, raw)
         self._done = True
         print('Done')
 
@@ -124,7 +124,7 @@ class Trajectory(object):
         jam.Reset(0.1)
 
         xmod = xstart
-        Fmin = -10
+        Fmin = -4
 
         #F = deque([], maxlen = 5)
         #zforce = self._force.wrench.force.z
@@ -140,7 +140,7 @@ class Trajectory(object):
             print("Z force mean", self._Favg)
             print("Z force", self._force.wrench.force.z)
 
-            jam.Reset(0.05)
+            jam.Reset(0.01)
 
             #keep all posiiton and orientation of e-e except for height the same for each itteration of loop
             xmod.position.x = xstart.position.x
@@ -152,7 +152,7 @@ class Trajectory(object):
             xmod.orientation.w = xstart.orientation.w
 
             #rospy.loginfo('moving down')
-            xmod.position.z = xmod.position.z - 0.2
+            xmod.position.z = xmod.position.z - 0.05
 
             
             rospy.loginfo(xmod.position.z)
@@ -175,8 +175,9 @@ class Trajectory(object):
         xmod.orientation.w = xstart.orientation.w
 
         #rospy.loginfo('moving down')
-        xmod.position.z = xmod.position.z - 0.1
+        xmod.position.z = xmod.position.z - .01
 
+        self.execute_move(xmod, True)
             
         rospy.loginfo(xmod.position.z)
         #self.execute_move(xmod)
@@ -184,10 +185,12 @@ class Trajectory(object):
         print("out")
         
         jam.Grip(1)
+
+        rospy.sleep(1)
         
         pub_state = rospy.Publisher('state', Int16, queue_size = 10, latch=True)
         rospy.loginfo(5) 
-        rospy.sleep(.2)
+        rospy.sleep(0.2)
         pub_state.publish(5)          
                           
         self._done = True

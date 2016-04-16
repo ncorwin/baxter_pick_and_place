@@ -6,7 +6,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-port = '/dev/ttyUSB1' # the name of the serial port
+port = '/dev/ttyUSB0' # the name of the serial port
 ser = serial.Serial(port,230400,rtscts=1)
 
 
